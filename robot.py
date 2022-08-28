@@ -16,8 +16,6 @@ def move_1(x, y, direction):
         x = x + 1
     elif 'W' == direction:
         x = x - 1
-    else:
-        raise Exception(f"Invalid direction:[{direction}]")
 
     return x, y, direction
 
@@ -33,39 +31,70 @@ def make_move(x, y, direction, move):
 
     return x, y, direction
 
-def take_trip(start_position, move_list):
-        position_list = start_position.split(' ')
-
-        if len(position_list) == 3:
-            x, y, direction = position_list
-        else:
-            raise Exception(f"Invalid start position:[{start_position}]")
-
+def take_trip(x, y, direction, move_list):
         for move in move_list:
            x, y, direction = make_move(int(x), int(y), direction, move) 
 
         return x, y, direction
 
-def program():
-    output_print_list = []
+def error_check_start(start_position):
+    if not start_position:
+        return None
 
-    max_position = input()
+    position_list = start_position.split(' ')
+
+    if len(position_list) == 3:
+        x, y, direction = position_list
+    else:
+        raise Exception(f"Invalid start position:[{start_position}]")
+
+    x = error_check_coordinate(x, "Invalid start position x coordinate") 
+    y = error_check_coordinate(y, "Invalid start position y coordinate") 
+
+    if direction not in cardinal_list:
+        raise Exception(f"Invalid start position direction:[{direction}]")
+
+    return x, y, direction
+
+def error_check_coordinate(coordinate, error_message):
+    try:
+        coordinate = int(coordinate)
+    except:
+        raise Exception(f"{error_message}:[{coordinate}]")
+
+    if coordinate < 0:
+        raise Exception(f"{error_message}:[{coordinate}]")
+    
+    return coordinate
+
+def error_check_max(max_position):
     max_position_list = max_position.split(' ')
 
     if len(max_position_list) == 2:    
-        max_x, max_y = max_position_list
+        x, y = max_position_list
     else:
         raise Exception(f"Invalid max coordinates given:[{max_position}]")
 
-    start_position = input()
+    x = error_check_coordinate(x, "Invalid max x coordinate") 
+    y = error_check_coordinate(y, "Invalid max y coordinate") 
+
+    return x, y
+
+def program():
+    output_print_list = []
+
+    max_x, max_y = error_check_max(input())
+    start_position = error_check_start(input())
 
     while start_position:
+        x, y, direction = start_position
         move_list = input()
-        x, y, direction = take_trip(start_position, move_list)
+        x, y, direction = take_trip(x, y, direction, move_list)
         output_print_list.append(f"{x} {y} {direction}")
-        start_position = input()
+        start_position = error_check_start(input())
 
     return output_print_list
+
 
 if __name__ == '__main__':
     output_print_list = program()
